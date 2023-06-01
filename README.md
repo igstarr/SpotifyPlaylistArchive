@@ -1,3 +1,3 @@
 # SpotifyPlaylistArchive
 Archives songs from playlist in spotify
-![example workflow](https://github.com/github/docs/actions/workflows/main.yml/badge.svg)
+![Get songs workflow](https://github.com/github/SpotifyPlaylistArchive/actions/workflows/update-songs-function-workflow.yml/badge.svg)
