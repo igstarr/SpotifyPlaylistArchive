@@ -1,0 +1,93 @@
+﻿@page "/callback/"
+
+@using Newtonsoft.Json;
+@using Spotify.Web.Data;
+@using SpotifyAPI.Web;
+@using System.Net.Http.Headers;
+@using System.Text.Json;
+@using Azure.Storage.Queues;
+@using Azure.Storage.Queues.Models;
+@inject SpotifyService SpotifyService
+@inject IConfiguration Config
+<h3>Callback</h3>
+
+<h2>@Track</h2>
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "code")]
+    public string? code { get; set; }
+
+    public string? Track { get; set; }
+
+    private readonly IConfiguration Configuration;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (string.IsNullOrEmpty(Track))
+        {
+            if (code is null)
+                code = "";
+            await GetCallback(code);
+            this.StateHasChanged();
+        }
+
+    }
+
+
+
+    // This method should be called from your web-server when the user visits "http://localhost:5543/callback"
+    public async Task GetCallback(string code)
+    {
+        var accessToken = await SpotifyService.GetAccessToken(code);
+
+        var spotify = new SpotifyClient(accessToken);
+        var songsList = new List<string>();
+        bool fetchitem = true;
+        while (fetchitem)
+        {
+            var songId = await GetQueueMessages();
+            if (songId is not null)
+            //spotify:track:1301WleyT98MSxVHPZCA6M
+                songsList.Add($"spotify:track:{songId}");
+            else
+                fetchitem = false;
+        }
+        if (songsList.Any())
+            await spotify.Playlists.AddItems("4Hyh1ow45TS3CXmdi7kxMB", new PlaylistAddItemsRequest(songsList));
+
+        Track = $"Added {songsList.Count()} songs.";
+
+    }
+    public async Task<string?> GetQueueMessages()
+    {
+        string connectionString = Config.GetConnectionString("AzureQueueStorage"); 
+
+        var options = new QueueClientOptions
+            {
+                MessageEncoding = QueueMessageEncoding.Base64
+            };
+        var queue = new QueueClient(connectionString, "spotify-songs-to-add", options);
+
+        var item = await RetrieveNextMessageAsync(queue);
+        return item;
+    }
+    static async Task<string> RetrieveNextMessageAsync(QueueClient theQueue)
+    {
+        if (await theQueue.ExistsAsync())
+        {
+            QueueProperties properties = await theQueue.GetPropertiesAsync();
+
+            if (properties.ApproximateMessagesCount > 0)
+            {
+                QueueMessage[] retrievedMessage = await theQueue.ReceiveMessagesAsync(1);
+                string theMessage = retrievedMessage[0].Body.ToString();
+                await theQueue.DeleteMessageAsync(retrievedMessage[0].MessageId, retrievedMessage[0].PopReceipt);
+                return theMessage;
+            }
+
+            return null;
+        }
+
+        return null;
+    }
+}
