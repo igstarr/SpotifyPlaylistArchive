@@ -21,7 +21,7 @@ namespace GetNewSong
     {
         [FunctionName("UpdateSpotifyArchiveList")]
         public static async Task Run(
-            [TimerTrigger("35 20 * * *")]TimerInfo myTimer, ExecutionContext context, ILogger log)
+            [TimerTrigger("0 6 * * *")]TimerInfo myTimer, ExecutionContext context, ILogger log)
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(context.FunctionAppDirectory)
