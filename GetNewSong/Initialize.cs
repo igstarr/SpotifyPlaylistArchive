@@ -60,7 +60,7 @@ namespace GetNewSong
             CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
 
             // Get a reference to the queue
-            CloudQueue queue = queueClient.GetQueueReference("myqueue");
+            CloudQueue queue = queueClient.GetQueueReference("spotify-songs-to-add");
 
             // Create a message and add it to the queue
             foreach (var item in listofIds)
