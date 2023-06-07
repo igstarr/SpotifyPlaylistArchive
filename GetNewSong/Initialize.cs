@@ -63,11 +63,11 @@ namespace GetNewSong
             CloudQueue queue = queueClient.GetQueueReference("myqueue");
 
             // Create a message and add it to the queue
-            string messageContent = "Hello from Azure Function!";
-            CloudQueueMessage message = new CloudQueueMessage(messageContent);
             foreach (var item in listofIds)
             {
-                await queue.AddMessageAsync(item);
+                CloudQueueMessage message = new CloudQueueMessage(item);
+
+                await queue.AddMessageAsync(message);
             }
         }
     }
