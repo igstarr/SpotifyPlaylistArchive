@@ -14,6 +14,8 @@ using System.Reflection;
 using Newtonsoft.Json;
 using System.Linq;
 using System;
+using Microsoft.WindowsAzure.Storage.Queue;
+using Microsoft.WindowsAzure.Storage;
 
 namespace GetNewSong
 {
@@ -21,7 +23,7 @@ namespace GetNewSong
     {
         [FunctionName("UpdateSpotifyArchiveList")]
         public static async Task Run(
-            [TimerTrigger("0 45 9 * * *")]TimerInfo myTimer, ExecutionContext context, ILogger log)
+            [TimerTrigger("0 10 10 * * *")]TimerInfo myTimer, ExecutionContext context, ILogger log)
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(context.FunctionAppDirectory)
@@ -43,10 +45,30 @@ namespace GetNewSong
             {
                 listofIds.Add(item.track.id);
             }
-            var responseMessage = System.Text.Json.JsonSerializer.Serialize(listofIds);
-            var content = new StringContent(responseMessage.ToString(), Encoding.UTF8, "application/json");
-            client.DefaultRequestHeaders.Accept.Clear();
-            var result = await client.PostAsync("https://writemessagetoqueue232321.azurewebsites.net/api/HttpTrigger1?code=4Q6OEYconlW0I_CzrhVSxFmT2uLcpYyIUWMahulMsWx7AzFuFNkQaA==", content); //or
+            //var responseMessage = System.Text.Json.JsonSerializer.Serialize(listofIds);
+            //var content = new StringContent(responseMessage.ToString(), Encoding.UTF8, "application/json");
+            //client.DefaultRequestHeaders.Accept.Clear();
+            //var result = await client.PostAsync("https://writemessagetoqueue232321.azurewebsites.net/api/HttpTrigger1?code=4Q6OEYconlW0I_CzrhVSxFmT2uLcpYyIUWMahulMsWx7AzFuFNkQaA==", content); //or
+
+            // Retrieve the connection string for the Azure Storage account
+            string storageConnectionString = config["AzureQueueStorage"];
+
+            // Create a CloudStorageAccount object by parsing the connection string
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storageConnectionString);
+
+            // Create a CloudQueueClient object from the storage account
+            CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
+
+            // Get a reference to the queue
+            CloudQueue queue = queueClient.GetQueueReference("myqueue");
+
+            // Create a message and add it to the queue
+            string messageContent = "Hello from Azure Function!";
+            CloudQueueMessage message = new CloudQueueMessage(messageContent);
+            foreach (var item in listofIds)
+            {
+                await queue.AddMessageAsync(item);
+            }
         }
     }
 }

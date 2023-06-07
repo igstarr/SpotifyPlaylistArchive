@@ -8,7 +8,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddTransient<SpotifyService>();
 builder.Services.AddOptions<Spotifysettings>().Bind(builder.Configuration.GetSection("Spotifysettings"));
 
