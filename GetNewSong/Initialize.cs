@@ -41,15 +41,11 @@ namespace GetNewSong
             var play = new PlayList();
             var tawCurrentList = await play.Get("1zZRVYNcJfjWAgsSbvox0O", client);
             var listofIds = new List<string>();
-            foreach (var item in tawCurrentList.items.Where(x => x.added_at.Day == DateTime.Now.AddDays(-1).Day))
+            foreach (var item in tawCurrentList.items.Where(x => x.added_at >= (DateTime.Now - TimeSpan.FromDays(2))))
             {
+                log.LogInformation($"Added to queue: {item.track.name} {item.added_at}");
                 listofIds.Add(item.track.id);
             }
-            //var responseMessage = System.Text.Json.JsonSerializer.Serialize(listofIds);
-            //var content = new StringContent(responseMessage.ToString(), Encoding.UTF8, "application/json");
-            //client.DefaultRequestHeaders.Accept.Clear();
-            //var result = await client.PostAsync("https://writemessagetoqueue232321.azurewebsites.net/api/HttpTrigger1?code=4Q6OEYconlW0I_CzrhVSxFmT2uLcpYyIUWMahulMsWx7AzFuFNkQaA==", content); //or
-
             // Retrieve the connection string for the Azure Storage account
             string storageConnectionString = config["AzureQueueStorage"];
 
