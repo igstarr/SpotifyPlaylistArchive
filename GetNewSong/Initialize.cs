@@ -41,7 +41,8 @@ namespace GetNewSong
             var play = new PlayList();
             var tawCurrentList = await play.Get("1zZRVYNcJfjWAgsSbvox0O", client);
             var listofIds = new List<string>();
-            foreach (var item in tawCurrentList.items.Where(x => x.added_at >= (DateTime.Now - TimeSpan.FromDays(2))))
+            
+            foreach (var item in tawCurrentList.items.Where(x => x.added_at >= myTimer.ScheduleStatus.Last))
             {
                 log.LogInformation($"Added to queue: {item.track.name} {item.added_at}");
                 listofIds.Add(item.track.id);

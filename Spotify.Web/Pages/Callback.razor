@@ -43,24 +43,41 @@
         var spotify = new SpotifyClient(accessToken);
         var songsList = new List<string>();
         bool fetchitem = true;
+        var tawCurrentList = await spotify.Playlists.Get("1zZRVYNcJfjWAgsSbvox0O");
+        var tawCurrentListIds = new List<string>();
+        if (tawCurrentList.Tracks is not null && tawCurrentList.Tracks.Items is not null)
+        {
+            foreach (PlaylistTrack<IPlayableItem> item in tawCurrentList.Tracks.Items)
+            {
+                if (item.Track is FullTrack track)
+                {
+                    // All FullTrack properties are available
+                    tawCurrentListIds.Add(track.Id);
+                }
+            }
+        }
+
         while (fetchitem)
         {
             var songId = await GetQueueMessages();
             if (songId is not null)
-            //spotify:track:1301WleyT98MSxVHPZCA6M
-                songsList.Add($"spotify:track:{songId}");
-            else
-                fetchitem = false;
+                //spotify:track:1301WleyT98MSxVHPZCA6M
+                if (!tawCurrentListIds.Contains(songId))
+                    songsList.Add($"spotify:track:{songId}");
+                else
+                    fetchitem = false;
         }
         if (songsList.Any())
-            await spotify.Playlists.AddItems("4Hyh1ow45TS3CXmdi7kxMB", new PlaylistAddItemsRequest(songsList));
+        {
 
+            await spotify.Playlists.AddItems("4Hyh1ow45TS3CXmdi7kxMB", new PlaylistAddItemsRequest(songsList));
+        }
         Track = $"Added {songsList.Count()} songs.";
 
     }
     public async Task<string?> GetQueueMessages()
     {
-        string connectionString = Config.GetConnectionString("AzureQueueStorage"); 
+        string connectionString = Config.GetConnectionString("AzureQueueStorage");
 
         var options = new QueueClientOptions
             {
