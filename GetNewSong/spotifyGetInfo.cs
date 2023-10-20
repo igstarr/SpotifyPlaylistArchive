@@ -9,25 +9,21 @@ namespace GetNewSong
     public class spotifyGetInfo
     {
 
-    
-            public Item[] items { get; set; }
-
+        public Item[] Items { get; set; }
         public class Item
         {
-            public DateTime added_at { get; set; }
-            public Track track { get; set; }
+            public DateTime AddedAt { get; set; }
+            public Track Track { get; set; }
         }
-
         public class Track
         {
-            public Artist[] artists { get; set; }
-            public string id { get; set; }
-            public string name { get; set; }
+            public Artist[] Artists { get; set; }
+            public string Id { get; set; }
+            public string Name { get; set; }
         }
-
         public class Artist
         {
-            public string name { get; set; }
+            public string Name { get; set; }
         }
 
     }

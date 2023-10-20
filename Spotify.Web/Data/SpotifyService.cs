@@ -16,6 +16,11 @@ namespace Spotify.Web.Data
         {
             var clientId = _config.Value.ClientId;
             var clientSecret = _config.Value.ClientSecret;
+            if(clientId is null)
+                throw new ArgumentNullException(nameof(clientId));
+            if(clientSecret is null) 
+                throw new ArgumentNullException(nameof(clientSecret));
+
             var response = await new OAuthClient().RequestToken(
                 new AuthorizationCodeTokenRequest(clientId, clientSecret, code, new Uri("https://localhost:7053/callback"))
             );

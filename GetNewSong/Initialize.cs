@@ -42,10 +42,10 @@ namespace GetNewSong
             var tawCurrentList = await play.Get("1zZRVYNcJfjWAgsSbvox0O", client);
             var listofIds = new List<string>();
             
-            foreach (var item in tawCurrentList.items.Where(x => x.added_at >= myTimer.ScheduleStatus.Last))
+            foreach (var item in tawCurrentList.Items.Where(x => x.AddedAt >= myTimer.ScheduleStatus.Last))
             {
-                log.LogInformation($"Added to queue: {item.track.name} {item.added_at}");
-                listofIds.Add(item.track.id);
+                log.LogInformation($"Added to queue: {item.Track.Name} {item.AddedAt}");
+                listofIds.Add(item.Track.Id);
             }
             // Retrieve the connection string for the Azure Storage account
             string storageConnectionString = config["AzureQueueStorage"];

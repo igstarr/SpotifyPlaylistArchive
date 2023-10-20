@@ -26,4 +26,10 @@
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\proj\SpotifyPlaylistArchive\GetNewSong\.editorconfig" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\proj\SpotifyPlaylistArchive\GetNewSong\.editorconfig" />
+  </ItemGroup>
 </Project>

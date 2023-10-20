@@ -13,23 +13,27 @@
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
 @code {
-    private int currentCount = 0;
+	private int currentCount = 0;
 
-    private void IncrementCount()
-    {
-        var loginRequest = new LoginRequest(
-          new Uri("https://localhost:7053/callback"),
-          Configuration.Value.ClientId,
-          LoginRequest.ResponseType.Code
-        )
-            {
-                Scope = new[] { 
-                    Scopes.PlaylistReadPrivate, 
-                    Scopes.PlaylistReadCollaborative, 
-                    Scopes.PlaylistModifyPrivate, 
-                    Scopes.PlaylistModifyPublic }
-            };
-        var uri = loginRequest.ToUri();
-        NavManager.NavigateTo(uri.ToString(), true);
-    }
+	private void IncrementCount()
+	{
+		var clientId = Configuration.Value.ClientId;
+		if (clientId is null)
+			throw new ArgumentNullException(nameof(clientId));
+
+		var loginRequest = new LoginRequest(
+				new Uri("https://localhost:7053/callback"),
+				clientId,
+				LoginRequest.ResponseType.Code
+		)
+			{
+				Scope = new[] {
+					Scopes.PlaylistReadPrivate,
+					Scopes.PlaylistReadCollaborative,
+					Scopes.PlaylistModifyPrivate,
+					Scopes.PlaylistModifyPublic }
+			};
+		var uri = loginRequest.ToUri();
+		NavManager.NavigateTo(uri.ToString(), true);
+	}
 }
